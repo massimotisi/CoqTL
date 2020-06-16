@@ -58,7 +58,6 @@ Definition Class2Relational :=
             (fun (tr: MatchedTransformation)
               _ (m: ClassModel) a c => None ))])])]).
 
-
 (*Definition Class2Relational :=
   (BuildTransformation
      ClassMetamodel RelationalMetamodel

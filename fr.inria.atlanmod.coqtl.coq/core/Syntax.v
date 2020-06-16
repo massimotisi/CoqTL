@@ -87,142 +87,112 @@ Section Syntax.
 
   (** ** Accessors **)
 
-  (*Definition OutputPatternElementReference_getRefType (o: OutputPatternElementReference) : TargetModelReference :=
-    match o with
-      BuildOutputPatternElementReference _ _ _ y _ => y
-    end.
+  Definition OutputPatternElementReference_getInElTypes (o: OutputPatternElementReference) : list SourceModelClass :=
+    match o with BuildOutputPatternElementReference y _ _ _ _ => y end.
 
+  Definition OutputPatternElementReference_getIterType (o: OutputPatternElementReference) : Type :=
+    match o with BuildOutputPatternElementReference _ y _ _ _ => y end.
+
+  Definition OutputPatternElementReference_getOutType (o: OutputPatternElementReference) : TargetModelClass :=
+    match o with BuildOutputPatternElementReference _ _ y _ _ => y end.
+
+  Definition OutputPatternElementReference_getRefType (o: OutputPatternElementReference) : TargetModelReference :=
+    match o with BuildOutputPatternElementReference _ _ _ y _ => y end.
+ 
   Definition OutputPatternElementReference_getOutputReference (o: OutputPatternElementReference) :
-    MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes OutType (OutputPatternElementReference_getRefType o)).
-  Proof.
-    destruct o eqn:ho.
-    exact o0.
-  Defined.
+    MatchedTransformation -> (OutputPatternElementReference_getIterType o) -> SourceModel -> (outputReferenceTypes (OutputPatternElementReference_getInElTypes o) (OutputPatternElementReference_getOutType o) (OutputPatternElementReference_getRefType o)):=
+    match o with BuildOutputPatternElementReference _ _ _ _ y => y end.
 
-  Definition OutputPatternElement_getName {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) : string :=
-    match o with
-      BuildOutputPatternElement _ _ y _ _ _ => y
-    end.
+  Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
+    match o with BuildOutputPatternElement y _ _ _ _ _ => y end.
 
-  Definition OutputPatternElement_getOutType {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) : TargetModelClass :=
-    match o with
-      BuildOutputPatternElement _ _ _ y _ _ => y
-    end.
+  Definition OutputPatternElement_getInElTypes (o: OutputPatternElement) : list SourceModelClass :=
+    match o with BuildOutputPatternElement _ y _ _ _ _ => y end.
 
-  Definition OutputPatternElement_getOutPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) :
-    IterType -> SourceModel -> (outputPatternElementTypes InElTypes (OutputPatternElement_getOutType o)) :=
-    match o with
-      BuildOutputPatternElement _ _ _ _ y _ => y
-    end.
+  Definition OutputPatternElement_getIterType (o: OutputPatternElement) : Type :=
+    match o with BuildOutputPatternElement _ _ y _ _ _ => y end.
 
-  Definition OutputPatternElement_getOutputElementReferences {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) :
-    list (OutputPatternElementReference InElTypes IterType (OutputPatternElement_getOutType o)) :=
-    match o with
-      BuildOutputPatternElement _ _ _ _ _ y => y
-    end.
+  Definition OutputPatternElement_getOutType (o: OutputPatternElement) : TargetModelClass :=
+    match o with BuildOutputPatternElement _ _ _ y _ _ => y end.
+
+  Definition OutputPatternElement_getOutputElementReferences (o: OutputPatternElement) :
+    list OutputPatternElementReference :=
+    match o with BuildOutputPatternElement _ _ _ _ _ y => y end.
+
+  Definition OutputPatternElement_getOutPatternElement (o: OutputPatternElement) :
+    (OutputPatternElement_getIterType o) -> SourceModel -> (outputPatternElementTypes (OutputPatternElement_getInElTypes o) (OutputPatternElement_getOutType o)) :=
+    match o with BuildOutputPatternElement _ _ _ _ y _ => y end.
 
   Definition Rule_getName (x : Rule) : string :=
-    match x with
-      BuildRule y _ _ _ _ _ => y
-    end.
+    match x with BuildRule y _ _ _ _ _ => y end.
 
   Definition Rule_getInTypes (x : Rule) : list SourceModelClass :=
-    match x with
-      BuildRule _ y _ _ _ _ => y
-    end.
+    match x with BuildRule _ y _ _ _ _ => y end.
 
   Definition Rule_getGuard (x : Rule) :
-    SourceModel -> (guardTypes (Rule_getInTypes x)).
-  Proof.
-    destruct x eqn:hx.
-    assumption.
-  Defined.
+    SourceModel -> (guardTypes (Rule_getInTypes x)):=
+    match x with BuildRule _ _ y _ _ _ => y end.
 
   Definition Rule_getIteratorType (x : Rule) : Type :=
-    match x with
-      BuildRule _ _ _ y _ _ => y
-    end.
+    match x with BuildRule _ _ _ y _ _ => y end.
 
   Definition Rule_getIteratedList (x: Rule) :
-    SourceModel -> (iteratedListTypes (Rule_getInTypes x) (Rule_getIteratorType x)).
-  Proof.
-    destruct x eqn:hx.
-    assumption.
-  Defined.
+    SourceModel -> (iteratedListTypes (Rule_getInTypes x) (Rule_getIteratorType x)) :=
+    match x with BuildRule _ _ _ _ y _ => y end.
 
   Definition Rule_getOutputPattern (x : Rule) :
-    list (OutputPatternElement (Rule_getInTypes x) (Rule_getIteratorType x)) :=
-    match x with
-      BuildRule _ _ _ _ _ y => y
-    end.
-
-  Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option (OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) :=
-    find (fun(o:OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) => beq_string name (OutputPatternElement_getName o))
-         (Rule_getOutputPattern r).
+    list OutputPatternElement :=
+    match x with BuildRule _ _ _ _ _ y => y end.
 
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
 
-  Definition MatchedOutputPatternElement_getName {InElTypes: list SourceModelClass} {IterType: Type} (o: MatchedOutputPatternElement InElTypes IterType) : string :=
-    match o with
-      BuildMatchedOutputPatternElement _ _ y _ _ => y
-    end.
+  Definition MatchedOutputPatternElement_getName (o: MatchedOutputPatternElement) : string :=
+    match o with BuildMatchedOutputPatternElement y _ _ _ _ => y end.
 
-  Definition MatchedOutputPatternElement_getOutType {InElTypes: list SourceModelClass} {IterType: Type} (o: MatchedOutputPatternElement InElTypes IterType) : TargetModelClass :=
-    match o with
-      BuildMatchedOutputPatternElement _ _ _ y _ => y
-    end.
+  Definition MatchedOutputPatternElement_getInElTypes (o: MatchedOutputPatternElement) : list SourceModelClass :=
+    match o with BuildMatchedOutputPatternElement _ y _ _ _ => y end.
 
-  Definition MatchedOutputPatternElement_getOutPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (o: MatchedOutputPatternElement InElTypes IterType) :
-    IterType -> SourceModel -> (outputPatternElementTypes InElTypes (MatchedOutputPatternElement_getOutType o)) :=
-    match o with
-      BuildMatchedOutputPatternElement _ _ _ _ y => y
-    end.
+  Definition MatchedOutputPatternElement_getIterType (o: MatchedOutputPatternElement) : Type :=
+    match o with BuildMatchedOutputPatternElement _ _ y _ _ => y end.
+
+  Definition MatchedOutputPatternElement_getOutType (o: MatchedOutputPatternElement) : TargetModelClass :=
+    match o with BuildMatchedOutputPatternElement _ _ _ y _ => y end.
+
+  Definition MatchedOutputPatternElement_getOutPatternElement (o: MatchedOutputPatternElement) :
+    (MatchedOutputPatternElement_getIterType o) -> SourceModel -> (outputPatternElementTypes (MatchedOutputPatternElement_getInElTypes o) (MatchedOutputPatternElement_getOutType o)) :=
+    match o with BuildMatchedOutputPatternElement _ _ _ _ y => y end.
 
   Definition MatchedRule_getName (x : MatchedRule) : string :=
-    match x with
-      BuildMatchedRule y _ _ _ _ _ => y
-    end.
+    match x with BuildMatchedRule y _ _ _ _ _ => y end.
 
   Definition MatchedRule_getInTypes (x : MatchedRule) : list SourceModelClass :=
-    match x with
-      BuildMatchedRule _ y _ _ _ _ => y
-    end.
+    match x with BuildMatchedRule _ y _ _ _ _ => y end.
 
   Definition MatchedRule_getGuard (x : MatchedRule) :
-    SourceModel -> (guardTypes (MatchedRule_getInTypes x)).
-  Proof.
-    destruct x eqn:hx.
-    assumption.
-  Defined.
+    SourceModel -> (guardTypes (MatchedRule_getInTypes x)):=
+    match x with BuildMatchedRule _ _ y _ _ _ => y end.
 
   Definition MatchedRule_getIteratorType (x : MatchedRule) : Type :=
-    match x with
-      BuildMatchedRule _ _ _ y _ _ => y
-    end.
+    match x with BuildMatchedRule _ _ _ y _ _ => y end.
 
   Definition MatchedRule_getIteratedList (x: MatchedRule) :
-    SourceModel -> (iteratedListTypes (MatchedRule_getInTypes x) (MatchedRule_getIteratorType x)).
-  Proof.
-    destruct x eqn:hx.
-    assumption.
-  Defined.
+    SourceModel -> (iteratedListTypes (MatchedRule_getInTypes x) (MatchedRule_getIteratorType x)) :=
+    match x with BuildMatchedRule _ _ _ _ y _ => y end.
 
   Definition MatchedRule_getOutputPattern (x : MatchedRule) :
-    list (MatchedOutputPatternElement (MatchedRule_getInTypes x) (MatchedRule_getIteratorType x)) :=
-    match x with
-      BuildMatchedRule _ _ _ _ _ y => y
-    end.
+    list MatchedOutputPatternElement :=
+    match x with BuildMatchedRule _ _ _ _ _ y => y end.
 
   Definition MatchedTransformation_getRules (x : MatchedTransformation) : list MatchedRule :=
     match x with BuildMatchedTransformation y => y end.
 
   (** ** Copying Matched Transformation *)
 
-  Definition matchOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (x: OutputPatternElement InElTypes IterType)
-    : MatchedOutputPatternElement InElTypes IterType :=
+  Definition matchOutputPatternElement (x: OutputPatternElement)
+    : MatchedOutputPatternElement :=
     match x with
-    | BuildOutputPatternElement _ _ c d e f => BuildMatchedOutputPatternElement InElTypes IterType c d e
+    | BuildOutputPatternElement a b c d e f => BuildMatchedOutputPatternElement a b c d e
     end.
 
   Definition matchRule (x: Rule) : MatchedRule :=
@@ -235,10 +205,10 @@ Section Syntax.
     | BuildTransformation a => BuildMatchedTransformation (map matchRule a)
     end.
 
-  Definition unmatchOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (x: MatchedOutputPatternElement InElTypes IterType)
-    : OutputPatternElement InElTypes IterType :=
+  Definition unmatchOutputPatternElement (x: MatchedOutputPatternElement)
+    : OutputPatternElement :=
     match x with
-    | BuildMatchedOutputPatternElement _ _ c d e => BuildOutputPatternElement InElTypes IterType c d e nil
+    | BuildMatchedOutputPatternElement a b c d e => BuildOutputPatternElement a b c d e nil
     end.
 
   Definition unmatchRule (x: MatchedRule) : Rule :=
@@ -249,12 +219,18 @@ Section Syntax.
   Definition unmatchTransformation (x: MatchedTransformation) : Transformation :=
     match x with
     | BuildMatchedTransformation a => BuildTransformation (map unmatchRule a)
-    end.*)
+    end.
+
+  (** ** Utilities *)
+
+  Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option OutputPatternElement :=
+    find (fun(o:OutputPatternElement) => beq_string name (OutputPatternElement_getName o))
+         (Rule_getOutputPattern r).
 
 End Syntax.
 
 Arguments BuildTransformation {_ _ _ _} _ {_ _ _ _} _ _.
-Arguments MatchedTransformation {_ _ _ _} _ {_ _ _ _} _ _.
+Arguments MatchedTransformation {_ _ _ _} _ {_ _ _ _} _.
 
 Arguments BuildRule {_ _ _ _ _ _ _ _ _ _} _ _ _ _ _ _.
 
