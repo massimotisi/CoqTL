@@ -35,12 +35,12 @@ Section Syntax.
 
   (** ** Syntax Types **)
 
-  Inductive MatchedOutputPatternElement (InElTypes: list SourceModelClass) (IterType: Type) : Type :=
+  Inductive MatchedOutputPatternElement: Type :=
     BuildMatchedOutputPatternElement :
       string ->
-      forall (OutType:TargetModelClass),
+      forall (InElTypes: list SourceModelClass) (IterType: Type)  (OutType:TargetModelClass),
         (IterType -> SourceModel -> (outputPatternElementTypes InElTypes OutType)) ->
-        MatchedOutputPatternElement InElTypes IterType.
+        MatchedOutputPatternElement.
 
   Inductive MatchedRule : Type :=
     BuildMatchedRule :
@@ -49,7 +49,7 @@ Section Syntax.
         (SourceModel -> (guardTypes InElTypes))
         -> forall (IterType: Type),
           (SourceModel -> (iteratedListTypes InElTypes IterType))
-          -> list (MatchedOutputPatternElement InElTypes IterType)
+          -> list (MatchedOutputPatternElement)
           -> MatchedRule.
 
   Inductive MatchedTransformation : Type :=
@@ -57,18 +57,18 @@ Section Syntax.
       list MatchedRule ->
       MatchedTransformation.
 
-  Inductive OutputPatternElementReference (InElTypes: list SourceModelClass) (IterType: Type) (OutType:TargetModelClass): Type :=
+  Inductive OutputPatternElementReference: Type :=
     BuildOutputPatternElementReference :
-      forall (OutRef: TargetModelReference),
+      forall (InElTypes: list SourceModelClass) (IterType: Type) (OutType:TargetModelClass) (OutRef: TargetModelReference),
         (MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes OutType OutRef)) ->
-        OutputPatternElementReference InElTypes IterType OutType.
+        OutputPatternElementReference.
 
-  Inductive OutputPatternElement (InElTypes: list SourceModelClass) (IterType: Type) : Type :=
+  Inductive OutputPatternElement : Type :=
     BuildOutputPatternElement :
       string ->
-      forall (OutType:TargetModelClass),
+      forall (InElTypes: list SourceModelClass) (IterType: Type) (OutType:TargetModelClass),
         (IterType -> SourceModel -> (outputPatternElementTypes InElTypes OutType)) ->
-        list (OutputPatternElementReference InElTypes IterType OutType)-> OutputPatternElement InElTypes IterType.
+        list (OutputPatternElementReference)-> OutputPatternElement.
 
   Inductive Rule : Type :=
     BuildRule :
@@ -77,7 +77,7 @@ Section Syntax.
         (SourceModel -> (guardTypes InElTypes))
         (* for *)  -> forall (IterType: Type),
           (SourceModel -> (iteratedListTypes InElTypes IterType))
-          (* to *) -> list (OutputPatternElement InElTypes IterType)
+          (* to *) -> list OutputPatternElement
           -> Rule.
 
   Inductive Transformation : Type :=
@@ -87,12 +87,12 @@ Section Syntax.
 
   (** ** Accessors **)
 
-  Definition OutputPatternElementReference_getRefType {InElTypes: list SourceModelClass} {IterType: Type} {OutType:TargetModelClass} (o: OutputPatternElementReference InElTypes IterType OutType) : TargetModelReference :=
+  Definition OutputPatternElementReference_getRefType (o: OutputPatternElementReference) : TargetModelReference :=
     match o with
       BuildOutputPatternElementReference _ _ _ y _ => y
     end.
 
-  Definition OutputPatternElementReference_getOutputReference {InElTypes: list SourceModelClass} {IterType: Type} {OutType:TargetModelClass} (o: OutputPatternElementReference InElTypes IterType OutType) :
+  Definition OutputPatternElementReference_getOutputReference (o: OutputPatternElementReference) :
     MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes OutType (OutputPatternElementReference_getRefType o)).
   Proof.
     destruct o eqn:ho.
