@@ -87,7 +87,7 @@ Section Syntax.
 
   (** ** Accessors **)
 
-  Definition OutputPatternElementReference_getRefType (o: OutputPatternElementReference) : TargetModelReference :=
+  (*Definition OutputPatternElementReference_getRefType (o: OutputPatternElementReference) : TargetModelReference :=
     match o with
       BuildOutputPatternElementReference _ _ _ y _ => y
     end.
@@ -249,19 +249,15 @@ Section Syntax.
   Definition unmatchTransformation (x: MatchedTransformation) : Transformation :=
     match x with
     | BuildMatchedTransformation a => BuildTransformation (map unmatchRule a)
-    end.
+    end.*)
 
 End Syntax.
 
-Arguments Rule {_ _ _ _} _ {_ _ _ _} _.
-Arguments BuildRule {_ _ _ _} _ {_ _ _ _} _.
+Arguments BuildTransformation {_ _ _ _} _ {_ _ _ _} _ _.
+Arguments MatchedTransformation {_ _ _ _} _ {_ _ _ _} _ _.
 
-Arguments MatchedRule {_ _ _ _} _ {_ _ _ _} _.
+Arguments BuildRule {_ _ _ _ _ _ _ _ _ _} _ _ _ _ _ _.
 
-Arguments Transformation {_ _ _ _} _ {_ _ _ _} _.
-Arguments BuildTransformation {_ _ _ _} _ {_ _ _ _} _.
+Arguments BuildOutputPatternElement {_ _ _ _ _ _ _ _ _ _} _ _ _ _ _ _.
 
-Arguments MatchedTransformation {_ _ _ _} _ {_ _ _ _} _.
-
-Arguments BuildOutputPatternElement {_ _ _ _} _ {_ _ _ _} _ _ {_}.
-Arguments BuildOutputPatternElementReference {_ _ _ _} _ {_ _ _ _} _ _ {_}.
+Arguments BuildOutputPatternElementReference {_ _ _ _ _ _ _ _ _ _} _ _ _ _ _.

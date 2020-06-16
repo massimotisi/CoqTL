@@ -8,7 +8,6 @@ Require Import core.utils.TopUtils.
 
 Require Import core.Syntax.
 (* Require Import core.Semantics. *)
-Require Import core.Semantics.
 Require Import core.Metamodel.
 
 Require Import Class2Relational.ClassMetamodel.
@@ -38,6 +37,29 @@ Require Import Class2Relational.RelationalMetamodel.
    } *)
 
 Definition Class2Relational :=
+  (BuildTransformation ClassMetamodel RelationalMetamodel
+    [(BuildRule "Class2Table"
+      [ClassEClass] (fun (m: ClassModel) c => true)
+      unit (fun (m: ClassModel) c => [tt])
+      [(BuildOutputPatternElement "tab" [ClassEClass] unit TableClass 
+        (fun _ (m: ClassModel) c => BuildTable (getClassId c) (getClassName c))
+        [(BuildOutputPatternElementReference [ClassEClass] unit TableClass TableColumnsReference
+          (fun (tr: MatchedTransformation)
+            _ (m: ClassModel) c t =>
+            None))])]);
+      (BuildRule
+        "Attribute2Column"
+        [AttributeEClass] (fun (m: ClassModel) a => negb (getAttributeDerived a))
+        unit (fun (m: ClassModel) (a: Attribute) => [tt])
+        [(BuildOutputPatternElement "col" [AttributeEClass] unit ColumnClass
+          (fun _ (m: ClassModel) a => BuildColumn (getAttributeId a) (getAttributeName a))
+          [(BuildOutputPatternElementReference
+            [AttributeEClass] unit ColumnClass ColumnReferenceReference
+            (fun (tr: MatchedTransformation)
+              _ (m: ClassModel) a c => None ))])])]).
+
+
+(*Definition Class2Relational :=
   (BuildTransformation
      ClassMetamodel RelationalMetamodel
      [(BuildRule
@@ -74,4 +96,4 @@ Definition Class2Relational :=
                       _ (m: ClassModel) (a: Attribute) (c: Column) =>
                       cl <- getAttributeType a m;
                             tb <- resolve tr m "tab" TableClass [ClassMetamodel_toEObject cl];
-                            return BuildColumnReference c tb))])])]).
+                            return BuildColumnReference c tb))])])]).*)

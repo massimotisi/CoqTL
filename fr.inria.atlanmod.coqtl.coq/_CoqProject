@@ -19,7 +19,7 @@ core/Expressions.v
 core/Engine.v
 core/EngineProofs.v
 core/Syntax.v
-core/Semantics.v
+#core/Semantics.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
@@ -31,5 +31,5 @@ examples/Class2Relational/tests/PersonModel.v
 #examples/Class2Relational/Theorems/Concrete_attributes_instantiate_impl.v
 #examples/Class2Relational/Theorems/All_classes_instantiate_spec.v
 #examples/Class2Relational/Theorems/Concrete_attributes_instantiate_spec.v
-examples/HSM2FSM/HSM.v
-examples/HSM2FSM/HSM2FSM.v
+#examples/HSM2FSM/HSM.v
+#examples/HSM2FSM/HSM2FSM.v
