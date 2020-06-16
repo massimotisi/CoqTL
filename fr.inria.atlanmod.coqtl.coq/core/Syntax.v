@@ -230,7 +230,7 @@ Section Syntax.
 End Syntax.
 
 Arguments BuildTransformation {_ _ _ _} _ {_ _ _ _} _ _.
-Arguments MatchedTransformation {_ _ _ _} _ {_ _ _ _} _.
+Arguments MatchedTransformation {_ _ _ _ _ _ _ _ _ _}.
 
 Arguments BuildRule {_ _ _ _ _ _ _ _ _ _} _ _ _ _ _ _.
 
