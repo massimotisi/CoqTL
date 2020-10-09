@@ -1,13 +1,13 @@
 -R core core
 -R examples examples
 
+core/utils/CpdtTactics.v
+core/utils/ListUtils.v
+core/utils/NotationUtils.v
 core/utils/ArithUtils.v
 core/utils/BoolUtils.v
 core/utils/ConcatUtils.v
-core/utils/CpdtTactics.v
 core/utils/DatatypeUtils.v
-core/utils/ListUtils.v
-core/utils/NotationUtils.v
 core/utils/PrintUtils.v
 core/utils/PropUtils.v
 core/utils/StringUtils.v
