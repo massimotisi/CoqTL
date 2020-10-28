@@ -7,6 +7,7 @@ We propose an alternative solution by designing and implementing an internal dom
 Information
 ------
 This repository contains working-in-progress Eclipse plugins for generating metamodel/model inputs of CoqTL from Ecore files.
+* The generator has been tested with Java 11 and seems not to be compatible with Java 8.
 * To generate **.v** files from Ecore metamodels, check **fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver**.
 * To generate **.v** files from xmi models, check **fr.inria.atlanmod.coqtl.xmi.core.XMIGeneratorDriver**.
   * A gradle file is provided to compile a executable jar for XMI model generation
@@ -18,7 +19,15 @@ This repository contains working-in-progress Eclipse plugins for generating meta
     * model relative path, e.g. /./resources/TT2BDD/tt.xor.xmi
     * output path, e.g. /./resources/output.v 
       * (make sure output name contains only a single dot to be recognizable by Coq)
-    
+
+Example
+------
+```
+gradle build
+unzip ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow.zip -d ./build/distributions/
+java -jar ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow/lib/fr.inria.atlanmod.coqtl.generators-all.jar TT2BDD TT ./resources/TT2BDD/TT.ecore ./resources/TT2BDD/tt.xor.xmi tt.xor.v
+```
+This command will generate a tt.xor.v file in the root directory of the generator project
 
 Contacts
 ------

@@ -1,1 +1,0 @@
-java -jar fr.inria.atlanmod.coqtl.generators-all.jar TT2BDD-FirstTry TT ./TT.ecore model.xmi model.v
