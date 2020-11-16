@@ -18,50 +18,22 @@ Require Import examples.TT2BDD.BDDv2.
 
 (* Reminders of Coq syntax *)
 
-Inductive Day : Type :=
-    | monday
-    | tuesday
-    | wednesday
-    | thursday
-    | friday
-    | saturday
-    | sunday
-    .
-
-Definition next_week_day (d:Day) : Day :=
-    match d with 
-    | monday => tuesday
-    | tuesday => wednesday
-    | wednesday => thursday
-    | thursday => friday
-    | friday => monday
-    | saturday => monday
-    | sunday => monday
-    end.
-
-Eval compute in (next_week_day monday).
-
-(* End of Reminders of Coq syntax *)
-
-(*
-Definition TT2BDD : BDD :=
-
-    end.
-*)
-
-
-Check BDD.
-Check TruthTable.
-
-Inductive Ship : Set := PirateShip.
+Inductive Ship : Set := PirateShip | KingShip .
 
 Inductive ActionResult : Set := Success | Failure.
 
 Definition sink_ship (s: Ship) : ActionResult :=
-    match s with PirateShip => Failure 
+    match s with PirateShip => Failure | KingShip => Success
     end.
 
 Eval compute in (sink_ship PirateShip).
+Eval compute in (sink_ship KingShip).
 
-Check BuildBDD "idBDD" "XOR".
+(* End of Reminders of Coq syntax *)
+
+
+Eval compute in (BuildBDD "bddIdD" "bddName").
+
+
+
 
