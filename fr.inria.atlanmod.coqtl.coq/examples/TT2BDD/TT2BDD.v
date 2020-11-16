@@ -16,6 +16,8 @@ Require Import core.Expressions.
 Require Import examples.TT2BDD.TT.
 Require Import examples.TT2BDD.BDDv2.
 
+Require Import examples.TT2BDD.tests.xorTT.
+
 (* Reminders of Coq syntax *)
 
 Inductive Ship : Set := PirateShip | KingShip .
@@ -23,7 +25,9 @@ Inductive Ship : Set := PirateShip | KingShip .
 Inductive ActionResult : Set := Success | Failure.
 
 Definition sink_ship (s: Ship) : ActionResult :=
-    match s with PirateShip => Failure | KingShip => Success
+    match s with 
+    | PirateShip => Failure 
+    | KingShip => Success
     end.
 
 Eval compute in (sink_ship PirateShip).
@@ -34,6 +38,17 @@ Eval compute in (sink_ship KingShip).
 
 Eval compute in (BuildBDD "bddIdD" "bddName").
 
+Definition TT2BDD 
+    : Model bddMetamodel_EObject bddMetamodel_ELink :=
+    (Build_Model
+        (
+            (Build_bddMetamodel_EObject BDDEClass (BuildBDD "ttID" "ttName")) :: 
+            nil
+        )
 
+        nil
+    ).
+
+Eval compute in TT2BDD.
 
 
