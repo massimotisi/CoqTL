@@ -20,12 +20,24 @@ This repository contains working-in-progress Eclipse plugins for generating meta
     * output path, e.g. /./resources/output.v 
       * (make sure output name contains only a single dot to be recognizable by Coq)
 
-Example
+Build example
 ------
 ```
 gradle build
 unzip ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow.zip -d ./build/distributions/
+```
+
+Example (xmi model input)
+------
+```
 java -jar ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow/lib/fr.inria.atlanmod.coqtl.generators-all.jar TT2BDD TT ./resources/TT2BDD/TT.ecore ./resources/TT2BDD/xorTT.xmi ./resources/TT2BDD/xorTT.v
+```
+This command will generate a ttxor.v file in the root directory of the generator project
+
+Example (ecore metamodel input)
+------
+```
+java -cp ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow/lib/fr.inria.atlanmod.coqtl.generators-all.jar fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver "resources/TT2BDD/TT.ecore" "./resources/TT2BDD/TT.v"
 ```
 This command will generate a ttxor.v file in the root directory of the generator project
 
