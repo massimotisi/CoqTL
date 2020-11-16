@@ -1,4 +1,5 @@
 Require Import String.
+Open Scope string_scope.
 Require Import List.
 Require Import Multiset.
 Require Import ListSet.
@@ -6,24 +7,25 @@ Require Import Omega.
 
 Require Import core.utils.Utils.
 
+Require Import core.Model.
 Require Import core.ConcreteSyntax.
 Require Import core.Semantics.
 Require Import core.Metamodel.
 Require Import core.Expressions.
 
-Require Import TT2BDD.TT.
-Require Import TT2BDD.BDDv2.
+Require Import examples.TT2BDD.TT.
+Require Import examples.TT2BDD.BDDv2.
 
 (* Reminders of Coq syntax *)
 
 Inductive Day : Type :=
-    | monday : Day
-    | tuesday : Day
-    | wednesday : Day
-    | thursday : Day
-    | friday : Day
-    | saturday : Day
-    | sunday : Day
+    | monday
+    | tuesday
+    | wednesday
+    | thursday
+    | friday
+    | saturday
+    | sunday
     .
 
 Definition next_week_day (d:Day) : Day :=
@@ -39,6 +41,27 @@ Definition next_week_day (d:Day) : Day :=
 
 Eval compute in (next_week_day monday).
 
-
 (* End of Reminders of Coq syntax *)
+
+(*
+Definition TT2BDD : BDD :=
+
+    end.
+*)
+
+
+Check BDD.
+Check TruthTable.
+
+Inductive Ship : Set := PirateShip.
+
+Inductive ActionResult : Set := Success | Failure.
+
+Definition sink_ship (s: Ship) : ActionResult :=
+    match s with PirateShip => Failure 
+    end.
+
+Eval compute in (sink_ship PirateShip).
+
+Check BuildBDD "idBDD" "XOR".
 
