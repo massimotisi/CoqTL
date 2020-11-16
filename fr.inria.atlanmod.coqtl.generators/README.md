@@ -25,9 +25,9 @@ Example
 ```
 gradle build
 unzip ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow.zip -d ./build/distributions/
-java -jar ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow/lib/fr.inria.atlanmod.coqtl.generators-all.jar TT2BDD TT ./resources/TT2BDD/TT.ecore ./resources/TT2BDD/tt.xor.xmi tt.xor.v
+java -jar ./build/distributions/fr.inria.atlanmod.coqtl.generators-shadow/lib/fr.inria.atlanmod.coqtl.generators-all.jar TT2BDD TT ./resources/TT2BDD/TT.ecore ./resources/TT2BDD/xorTT.xmi ./resources/TT2BDD/xorTT.v
 ```
-This command will generate a tt.xor.v file in the root directory of the generator project
+This command will generate a ttxor.v file in the root directory of the generator project
 
 Contacts
 ------
