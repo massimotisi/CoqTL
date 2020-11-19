@@ -18,37 +18,58 @@ Require Import examples.TT2BDD.BDDv2.
 
 Require Import examples.TT2BDD.tests.xorTT.
 
-(* Reminders of Coq syntax *)
+(*
+Placeholder function
+*)
+Definition TransformEObject (o : TTMetamodel_EObject) : bddMetamodel_EObject :=
+    (Build_bddMetamodel_EObject BDDEClass (BuildBDD "000_Placeholder" "Placeholder"))
+    .
+    
+(*
+Build_TTMetamodel_EObject 
+    LocatedElementEClass 
+    Build_Abstract_LocatedElement 
+        TruthTableEClass 
+        BuildTruthTable  "000_Placeholder"  "" "Placeholder" 
+*)
+(*
+Definition obj: TTMetamodel_EObject := (Build_TTMetamodel_EObject LocatedElementEClass (Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable "1147258851_TruthTable" "" "Test"))).
 
-Inductive Ship : Set := PirateShip | KingShip .
-
-Inductive ActionResult : Set := Success | Failure.
-
-Definition sink_ship (s: Ship) : ActionResult :=
-    match s with 
-    | PirateShip => Failure 
-    | KingShip => Success
+Definition ExtractLocatedElementFromEObject (o : TTMetamodel_EObject) : LocatedElement :=
+    match o with
+    | Build_TTMetamodel_EObject 
+        _
+        b => match b with
+             | Build_Abstract_LocatedElement _ _
+             |  Builld_Concrete_LocatedElement "" "" ""
+             end.
     end.
 
-Eval compute in (sink_ship PirateShip).
-Eval compute in (sink_ship KingShip).
+Eval compute in ExtractLocatedElementFromEObject obj.
+*)
 
-(* End of Reminders of Coq syntax *)
+Fixpoint TransformAllEObjects (l : list TTMetamodel_EObject) : list bddMetamodel_EObject :=
+    match l with
+        | nil => nil
+        | h :: t => (TransformEObject h) :: (TransformAllEObjects t)
+    end.
 
 
-Eval compute in (BuildBDD "bddIdD" "bddName").
-
-Definition TT2BDD 
+Definition TT2BDD (tt : Model TTMetamodel_EObject TTMetamodel_ELink)
     : Model bddMetamodel_EObject bddMetamodel_ELink :=
     (Build_Model
         (
-            (Build_bddMetamodel_EObject BDDEClass (BuildBDD "ttID" "ttName")) :: 
-            nil
+            TransformAllEObjects (allModelElements tt)
         )
-
-        nil
+        (
+            (Build_bddMetamodel_ELink BDDTreesEReference (BuildBDDTrees  (BuildBDD "626742236_BDD" "Test") ( nil ))) ::
+			nil
+        )
     ).
 
-Eval compute in TT2BDD.
+Eval compute in TT2BDD (InputModel).
+
+
+
 
 
