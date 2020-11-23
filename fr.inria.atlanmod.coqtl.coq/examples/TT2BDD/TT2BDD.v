@@ -19,10 +19,6 @@ Require Import examples.TT2BDD.BDDv2.
 Require Import examples.TT2BDD.tests.xorTT.
 
 
-
-Definition eObj: TTMetamodel_EObject := (Build_TTMetamodel_EObject LocatedElementEClass (Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable "1147258851_TruthTable" "" "Test"))).
-Definition locEl: LocatedElement := (Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable "1147258851_TruthTable" "" "Test")).
-
 Definition TransformTruthTable (lE: LocatedElement): option bddMetamodel_EObject :=
     match lE with
     | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable  id location name) => Some (Build_bddMetamodel_EObject BDDEClass (BuildBDD id name))
@@ -43,17 +39,14 @@ Definition TransformEObject (o : TTMetamodel_EObject) : option bddMetamodel_EObj
     match (TTMetamodel_toEClass LocatedElementEClass o) with
     | Some locatedElement => 
         match locatedElement with
-        | Build_Concrete_LocatedElement id location  =>  None
         | Build_Abstract_LocatedElement TruthTableEClass _ => TransformTruthTable locatedElement
+        | Build_Abstract_LocatedElement TT.PortEClass _ => TransformPort locatedElement
         | Build_Abstract_LocatedElement RowEClass (BuildRow  id location) => None
         | Build_Abstract_LocatedElement CellEClass (BuildCell  id location value) => None
-        | Build_Abstract_LocatedElement TT.PortEClass _ => TransformPort locatedElement
+        | Build_Concrete_LocatedElement _ _  =>  None
         end
     | None => None
     end.
-
-Eval compute in TransformEObject eObj.
-
 
 Fixpoint TransformAllEObjects (l : list TTMetamodel_EObject) : list bddMetamodel_EObject :=
     match l with
@@ -64,7 +57,6 @@ Fixpoint TransformAllEObjects (l : list TTMetamodel_EObject) : list bddMetamodel
         | None => (TransformAllEObjects t)
         end
     end.
-
 
 Definition TT2BDD (tt : Model TTMetamodel_EObject TTMetamodel_ELink)
     : Model bddMetamodel_EObject bddMetamodel_ELink :=
