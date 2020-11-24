@@ -41,6 +41,20 @@ Definition TransformRow (lE: LocatedElement) : option bddMetamodel_EObject :=
     | _ => None
     end.
 
+Definition TransformCell (lE: LocatedElement) : option bddMetamodel_EObject :=
+    match TTMetamodel_LocatedElement_DownCast CellEClass lE with
+    | Some cell =>
+        match Cell_getPort cell InputModel with
+        | Some abstractPort => 
+            match abstractPort with
+            | TT.Build_Abstract_Port TT.OutputPortEClass _ => Some (Build_bddMetamodel_EObject AssignmentEClass (BuildAssignment (Cell_getId cell) (Cell_getValue cell))) 
+            | _ => None
+            end
+        | _ => None
+        end
+    | _ => None
+    end.
+    
 Definition TransformEObject (o : TTMetamodel_EObject) : option bddMetamodel_EObject :=
     match (TTMetamodel_toEClass LocatedElementEClass o) with
     | Some locatedElement => 
@@ -48,7 +62,7 @@ Definition TransformEObject (o : TTMetamodel_EObject) : option bddMetamodel_EObj
         | Build_Abstract_LocatedElement TruthTableEClass _ => TransformTruthTable locatedElement
         | Build_Abstract_LocatedElement TT.PortEClass _ => TransformPort locatedElement
         | Build_Abstract_LocatedElement RowEClass _ => TransformRow locatedElement
-        | Build_Abstract_LocatedElement CellEClass (BuildCell  id location value) => None
+        | Build_Abstract_LocatedElement CellEClass _ => TransformCell locatedElement
         | Build_Concrete_LocatedElement _ _  =>  None
         end
     | None => None
