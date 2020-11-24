@@ -21,7 +21,7 @@ Require Import examples.TT2BDD.tests.xorTT.
 
 Definition TransformTruthTable (lE: LocatedElement): option bddMetamodel_EObject :=
     match lE with
-    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable  id location name) => Some (Build_bddMetamodel_EObject BDDEClass (BuildBDD id name))
+    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable  id _ name) => Some (Build_bddMetamodel_EObject BDDEClass (BuildBDD id name))
     | _ => None
     end.
 
@@ -29,10 +29,16 @@ Definition TransformPort (lE : LocatedElement) : option bddMetamodel_EObject :=
     match (TTMetamodel_LocatedElement_DownCast TT.PortEClass lE) with
     | Some abstractPort => 
         match abstractPort with
-        | TT.Build_Abstract_Port TT.InputPortEClass (TT.BuildInputPort id location name) => Some (Build_bddMetamodel_EObject PortEClass (Build_Abstract_Port InputPortEClass (BuildInputPort id name))) 
-        | TT.Build_Abstract_Port TT.OutputPortEClass (TT.BuildOutputPort id location name) => Some (Build_bddMetamodel_EObject PortEClass (Build_Abstract_Port OutputPortEClass (BuildOutputPort id name))) 
+        | TT.Build_Abstract_Port TT.InputPortEClass (TT.BuildInputPort id _ name) => Some (Build_bddMetamodel_EObject PortEClass (Build_Abstract_Port InputPortEClass (BuildInputPort id name))) 
+        | TT.Build_Abstract_Port TT.OutputPortEClass (TT.BuildOutputPort id _ name) => Some (Build_bddMetamodel_EObject PortEClass (Build_Abstract_Port OutputPortEClass (BuildOutputPort id name))) 
         end
     | None => None
+    end.
+
+Definition TransformRow (lE: LocatedElement) : option bddMetamodel_EObject :=
+    match lE with
+    | Build_Abstract_LocatedElement RowEClass (BuildRow  id _) => Some (Build_bddMetamodel_EObject TreeEClass (Build_Abstract_Tree LeafEClass (BuildLeaf id )))
+    | _ => None
     end.
 
 Definition TransformEObject (o : TTMetamodel_EObject) : option bddMetamodel_EObject :=
@@ -41,7 +47,7 @@ Definition TransformEObject (o : TTMetamodel_EObject) : option bddMetamodel_EObj
         match locatedElement with
         | Build_Abstract_LocatedElement TruthTableEClass _ => TransformTruthTable locatedElement
         | Build_Abstract_LocatedElement TT.PortEClass _ => TransformPort locatedElement
-        | Build_Abstract_LocatedElement RowEClass (BuildRow  id location) => None
+        | Build_Abstract_LocatedElement RowEClass _ => TransformRow locatedElement
         | Build_Abstract_LocatedElement CellEClass (BuildCell  id location value) => None
         | Build_Concrete_LocatedElement _ _  =>  None
         end
