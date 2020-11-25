@@ -78,7 +78,7 @@ Fixpoint TransformAllEObjects (l : list TTMetamodel_EObject) : list bddMetamodel
         end
     end.
 
-Definition TT2BDD (tt : Model TTMetamodel_EObject TTMetamodel_ELink)
+Definition TT2BDD_baseobjects (tt : Model TTMetamodel_EObject TTMetamodel_ELink)
     : Model bddMetamodel_EObject bddMetamodel_ELink :=
     (Build_Model
         (
@@ -89,7 +89,200 @@ Definition TT2BDD (tt : Model TTMetamodel_EObject TTMetamodel_ELink)
         )
     ).
 
-Eval compute in TT2BDD (InputModel).
+Fixpoint GetTruthTable (l : list TTMetamodel_EObject) : option TruthTable := 
+    match l with 
+    | nil => None
+    | h :: t => 
+        match (TTMetamodel_toEClass LocatedElementEClass h) with
+        | Some locatedElement => 
+            match locatedElement with
+            | Build_Abstract_LocatedElement TruthTableEClass retTT => Some retTT
+            | _  => (GetTruthTable t)
+            end
+        | None => (GetTruthTable t)
+        end
+    end
+    .
+Eval compute in GetTruthTable (allModelElements ( InputModel)).
+
+
+
+Inductive MyTree : Set :=
+  | MySubtree : (*portId*) string -> (*name*) string -> (*forZero*) MyTree -> (*forOne*) MyTree -> MyTree
+  | MyLeaf : (*name*) string -> (*assignments*) list Assignment -> MyTree
+  .
+
+Fixpoint IterInputPorts (ports : list TT.Port) (subTreeName : string) : MyTree :=
+    match ports with 
+    | nil => MyLeaf "" nil
+    | abstractPort :: t => 
+        match abstractPort with
+        | TT.Build_Abstract_Port TT.InputPortEClass (TT.BuildInputPort inputPortId _ inputPortName) => MySubtree inputPortId (subTreeName++inputPortName) (IterInputPorts t (subTreeName++inputPortName++"0")) (IterInputPorts t (subTreeName++inputPortName++"1"))
+        | _ => IterInputPorts t subTreeName
+        end
+    end.
+
+Definition CellsPortHasId (portId : string) (tt : TTModel) (cell : Cell) : bool :=
+    match Cell_getPort cell tt with 
+    | None => false
+    | Some port => eqb (TT.Port_getId port) portId
+    end
+.
+
+Definition RowGetCellForPortId (row : Row) (tt : TTModel) (portId : string) : option Cell := 
+    match Row_getCells row tt with
+    | None => None
+    | Some l => 
+        match filter (CellsPortHasId portId tt) l with
+        | nil => None
+        | h :: t => Some h
+        end
+    end
+.
+
+Definition RowMatchesValueForPort (portId : string) (value : bool) (tt : TTModel) (row : Row) : bool := 
+    match RowGetCellForPortId row tt portId with 
+    | None => false
+    | Some cell => Bool.eqb (Cell_getValue cell) value
+    end
+.
+
+
+Definition ReduceMatchingRows (matchingRows : option (list Row)) (portId : string) (value : bool) (tt : TTModel) : option (list Row) := 
+    match matchingRows with
+    | None => None
+    | Some l => 
+        match filter (RowMatchesValueForPort portId value tt) l with
+        | nil => None
+        | l => Some l
+        end
+    end
+.
+
+Fixpoint AssignmentListFromRowOutputPorts (ports : list TT.Port) (row : Row) (tt : TTModel) : list Assignment :=
+    match ports with 
+    | nil => nil
+    | abstractPort :: tail => 
+        match abstractPort with
+        | TT.Build_Abstract_Port TT.OutputPortEClass (TT.BuildOutputPort outputPortId _ _) => 
+            match RowGetCellForPortId row tt outputPortId with 
+            | None => AssignmentListFromRowOutputPorts tail row tt
+            | Some cell => (BuildAssignment (Cell_getId cell) (Cell_getValue cell)) :: AssignmentListFromRowOutputPorts tail row tt
+            end
+        | _ => AssignmentListFromRowOutputPorts tail row tt
+        end
+    end
+.
+
+
+Fixpoint FillMyTreeLeaves (myTree : MyTree) (ports : list TT.Port) (subTreeName : string) (matchingRows : option (list Row)) (tt : TTModel) : MyTree :=
+    match myTree with 
+    | MySubtree portId name forZero forOne => 
+        MySubtree portId name (FillMyTreeLeaves forZero ports (name++"0") (ReduceMatchingRows matchingRows portId false tt) tt) (FillMyTreeLeaves forOne ports (name++"1") (ReduceMatchingRows matchingRows portId true tt) tt)
+    | MyLeaf name _ => 
+        match matchingRows with
+        | None => MyLeaf subTreeName nil
+        | Some nil => MyLeaf subTreeName nil
+        | Some (row::_) => MyLeaf subTreeName (AssignmentListFromRowOutputPorts ports row tt)
+        end 
+    end
+.
+
+Fixpoint IterOutputPorts (myTree : MyTree) (ports : list TT.Port) (subTreeName : string) : MyTree :=
+    match ports with 
+    | nil => MyLeaf "" nil
+    | abstractPort :: t => 
+        match abstractPort with
+        | TT.Build_Abstract_Port TT.OutputPortEClass (TT.BuildOutputPort outputPortId _ outputPortName) => MyLeaf (subTreeName++outputPortName) nil
+        | _ =>  match myTree with 
+                | MySubtree portId name forZero forOne => MySubtree portId name (IterOutputPorts forZero t (name++"0")) (IterOutputPorts forOne t (name++"1"))
+                | myLeaf => myLeaf
+                end
+        end
+    end.
+
+Definition deOptionTruthTable (o : option TruthTable) : TruthTable := 
+    match o with
+    | Some myTruthTable => myTruthTable
+    | None => BuildTruthTable "" "" ""
+    end
+.
+
+Definition deOptionList (t : Type) (o : option (list t)) : list t := 
+    match o with
+    | Some l => l
+    | None => nil
+    end
+.
+    
+(*
+Eval compute in 
+    deOptionList TT.Port (
+        TruthTable_getPorts (
+            deOptionTruthTable (
+                GetTruthTable (
+                    allModelElements (InputModel)
+                )
+            )
+        ) InputModel
+    )
+.
+*)
+
+(*Eval compute in IterInputPorts (
+    deOptionList TT.Port (
+        TruthTable_getPorts (
+            deOptionTruthTable (
+                GetTruthTable (
+                    allModelElements (InputModel)
+                )
+            )
+        ) InputModel
+    ))
+    ""
+.
+*)
+
+Eval compute in IterOutputPorts (IterInputPorts (
+    deOptionList TT.Port (
+        TruthTable_getPorts (
+            deOptionTruthTable (
+                GetTruthTable (
+                    allModelElements (InputModel)
+                )
+            )
+        ) InputModel
+    ))
+    "") (
+        deOptionList TT.Port (
+            TruthTable_getPorts (
+                deOptionTruthTable (
+                    GetTruthTable (
+                        allModelElements (InputModel)
+                    )
+                )
+            ) InputModel
+        )) ""
+.
+
+
+Eval compute in FillMyTreeLeaves (IterInputPorts (
+    deOptionList TT.Port (
+        TruthTable_getPorts (
+            deOptionTruthTable (
+                GetTruthTable (
+                    allModelElements (InputModel)
+                )
+            )
+        ) InputModel
+    ))
+    "")
+    (deOptionList TT.Port (TruthTable_getPorts (deOptionTruthTable (GetTruthTable (allModelElements (InputModel)))) InputModel))
+    ""
+    (TruthTable_getRows (deOptionTruthTable (GetTruthTable (allModelElements (InputModel)))) InputModel)
+    InputModel
+.
+
 
 
 
